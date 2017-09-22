@@ -60,7 +60,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b50ddd5496cdae411062"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "f8ff13776c4b1316552c"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -5806,7 +5806,8 @@ function showVideo(src) {
 var loadVideoFunc = exports.loadVideoFunc = function loadVideoFunc(loading) {
     return function (src) {
         var req = new XMLHttpRequest();
-        req.open('GET', src, true);
+        var newSrc = src.indexOf("") === 0 ? src : "" + src;
+        req.open('GET', newSrc, true);
         req.responseType = 'blob';
         req.onprogress = function (progressEvent) {
             var progress = 0.5 + 0.5 * (progressEvent.loaded / progressEvent.total);
@@ -6725,12 +6726,25 @@ function hideShare() {
 var showDialog = exports.showDialog = function () {
 	var haveOpening = false;
 
+	function setWxShareOpt(opt) {
+		wx.onMenuShareAppMessage({
+			title: opt.title, // 分享好友标题
+			desc: opt.desc, // 分享好友描述
+			link: opt.link, // 分享好友链接
+			imgUrl: opt.imgUrl // 分享好友图标
+		});
+		wx.onMenuShareTimeline({
+			title: opt.desc, // 分享好友标题
+			link: opt.link, // 分享好友链接
+			imgUrl: opt.imgUrl // 分享好友图标
+		});
+	}
 	return function (i, me) {
 		if (haveOpening) {
 			return;
 		}
 		insertDialog(i);
-
+		var data = _dropTypes.rainDrops[i];
 		var el = $('#dialog_' + i),
 		    content = $('.m-dialog-content-text', el),
 		    closeBtn = $('.m-close-btn', el);
@@ -6758,6 +6772,13 @@ var showDialog = exports.showDialog = function () {
 				haveOpening = false;
 				el.removeClass('show');
 				el.remove();
+				console.log('dialog-close');
+				setWxShareOpt({
+					title: '一座凭空建造的雨中城市',
+					desc: '',
+					imgUrl: "" + '/images/share_img.jpg',
+					link: location.href
+				});
 			}
 		});
 		if (haveOpening) {
@@ -6780,6 +6801,7 @@ var showDialog = exports.showDialog = function () {
 			ev.stopPropagation();
 		});
 		el.addClass('show');
+		console.log('dialog-show');
 		me && (me.lockMove = true);
 		var musicURL = "" + '/media/' + _dropTypes.rainDrops[i].file + '.mp3';
 		loadFunc(btn, musicURL);

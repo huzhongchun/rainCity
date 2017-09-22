@@ -46,12 +46,25 @@ function hideShare() {
 export const showDialog = (function () {
 	let haveOpening = false;
 
+	function setWxShareOpt(opt) {
+        wx.onMenuShareAppMessage({
+            title: opt.title,
+            desc:  opt.desc,
+            link:  opt.link,
+            imgUrl:opt.imgUrl,
+        });
+        wx.onMenuShareTimeline({
+            title: opt.timeLineTitle,
+            link:  opt.link,
+            imgUrl:opt.imgUrl,
+        });
+    }
 	return function (i, me) {
 		if (haveOpening) {
 			return;
 		}
 		insertDialog(i);
-
+        const data = rainDrops[i];
 		const el       = $('#dialog_' + i),
 		      content  = $('.m-dialog-content-text', el),
 		      closeBtn = $('.m-close-btn', el);
@@ -77,7 +90,14 @@ export const showDialog = (function () {
 				haveOpening = false;
 				el.removeClass('show');
 				el.remove();
-			}
+                setWxShareOpt({
+                    title: '雨中城，一座永远下雨的城市',
+                    desc: '一座凭空建造的雨中城市，居然被地图收录了',
+                    timeLineTitle: '雨中城，一座永远下雨的城市',
+                    imgUrl:process.env.CDN_PREFIX+'/images/share_img.jpg',
+                    link: location.href
+                });
+            }
 		});
 		if (haveOpening) {
 			return;
@@ -99,7 +119,14 @@ export const showDialog = (function () {
 			ev.stopPropagation();
 		});
 		el.addClass('show');
-		me && (me.lockMove = true);
+        setWxShareOpt({
+            title: '我找了30个国家和省市的人，录了雨声送给你。',
+            desc: '我分享了一段来自'+data.position+'的雨声给你，不来听听吗？',
+            timeLineTitle:'我找了30个国家和省市的人，录了雨声送给你。',
+            imgUrl:process.env.CDN_PREFIX+'/images/share_img.jpg',
+            link: location.href
+        });
+        me && (me.lockMove = true);
 		const musicURL = `${process.env.CDN_PREFIX}/media/${rainDrops[i].file}.mp3`;
 		loadFunc(btn, musicURL);
 		haveOpening = true;

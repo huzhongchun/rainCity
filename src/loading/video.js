@@ -57,7 +57,8 @@ function showVideo(src) {
 
 export const loadVideoFunc = loading => src => {
     const req = new XMLHttpRequest();
-    req.open('GET', src, true);
+    const newSrc = (src.indexOf(process.env.CDN_PREFIX) === 0 ? src : process.env.CDN_PREFIX + src);
+    req.open('GET', newSrc, true);
     req.responseType = 'blob';
     req.onprogress = function (progressEvent) {
         const progress = 0.5 + 0.5 * (progressEvent.loaded / progressEvent.total);
