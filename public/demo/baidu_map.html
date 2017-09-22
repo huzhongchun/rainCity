@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html {width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+        #allmap{width:100%;height:500px;}
+        p{margin-left:5px; font-size:14px;}
+        .tear{
+            display: block;
+            -webkit-box-sizing: content-box;
+            -moz-box-sizing: content-box;
+            box-sizing: content-box;
+            float: none;
+            z-index: auto;
+            width: 10em;
+            height: 10em;
+            position: static;
+            cursor: default;
+            opacity: 1;
+            top: auto;
+            right: auto;
+            bottom: auto;
+            left: auto;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+            outline: none;
+            border: 0 solid rgba(0,0,0,1);
+            -webkit-border-radius: 80% 0 55% 50% / 55% 0 80% 50%;
+            border-radius: 80% 0 55% 50% / 55% 0 80% 50%;
+            font: normal normal normal 100%/normal Arial, Helvetica, sans-serif;
+            color: rgba(0,0,0,1);
+            text-decoration: none;
+            text-align: left;
+            text-transform: none;
+            text-indent: 0;
+            -o-text-overflow: clip;
+            text-overflow: clip;
+            letter-spacing: 0;
+            white-space: normal;
+            word-spacing: 0;
+            background: #1abc9c;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            text-shadow: none;
+            -webkit-transition: none;
+            -moz-transition: none;
+            -o-transition: none;
+            transition: none;
+            -webkit-transform: rotateZ(-45deg) scaleX(1) scaleY(1) scaleZ(1);
+            transform: rotateZ(-45deg) scaleX(1) scaleY(1) scaleZ(1);
+            -webkit-transform-origin: 50% 50% 0;
+            transform-origin: 50% 50% 0;
+        }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=9uMFS6fIQvQpFcZZXXXw3Q20u7em3LcP"></script>
+    <title>显示全景控件</title>
+</head>
+<body>
+<div id="allmap"></div>
+<!--<div class ="tear"></div>-->
+<p>在地图上添加全景控件，点击全景控件进入全景图</p>
+</body>
+</html>
+<script type="text/javascript">
+var panorama = new BMap.Panorama('allmap'); //默认为显示导航控件
+var geolocation = new BMap.Geolocation();
+geolocation.getCurrentPosition(function(r){
+    if(this.getStatus() == BMAP_STATUS_SUCCESS){
+        console.log('r',r.point);
+        panorama.setPosition(new BMap.Point(r.point.lng,r.point.lat));
+    }else {
+        alert('failed'+this.getStatus());
+    }
+},{enableHighAccuracy: true})
+</script>

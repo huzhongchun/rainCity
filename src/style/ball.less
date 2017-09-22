@@ -1,0 +1,283 @@
+@color_1: #000;
+@color_2: #999;
+@color_3: #666;
+@background_color_1: #000;
+@background_color_2: rgba(226, 211, 23, 0);
+@background_color_3: rgba(226, 211, 23, 0.1);
+@background_color_4: #fff;
+@background_color_5: transparent;
+@border_color_1: transparent;
+@import "func";
+
+@keyframes light {
+  0% {
+    box-shadow: 0 0 50px 6px rgba(249, 238, 102, 0.7);
+  }
+  70% {
+    background-color: rgba(249, 248, 175, 1);
+    box-shadow: 0 0 100vw 100vh rgba(249, 248, 175, 1);
+  }
+  100% {
+    background-color: #000;
+    box-shadow: 0 0 100vw 100vh rgba(0,0,0, 1);
+    //box-shadow: 0 0 100vh 100vh rgb(255,255,255);
+  }
+}
+@-webkit-keyframes light {
+  0% {
+    box-shadow: 0 0 50px 6px rgba(249, 238, 102, 0.7);
+  }
+  70% {
+    background-color: rgba(249, 248, 175, 1);
+    box-shadow: 0 0 80vw 80vh rgba(249, 248, 175, 1);
+  }
+  100% {
+    background-color: #000;
+    box-shadow: 0 0 100vw 100vh rgba(0,0,0, 1);
+  }
+}
+body.ball-body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: #000;
+  .bg('/images/ball/ball_bg.jpg');
+  background-size: 750px auto;
+  background-position: top center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  transition: opacity ease 3s;
+  &::before {
+    display: block;
+    color: @color_1;
+    position: absolute;
+    width: 40px;
+    top: 50%;
+    font-weight: bold;
+    font-size: 40px;
+    left: 50%;
+    line-height: 2;
+    transform: translate(-50%, -50%);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  }
+
+  .cell {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    opacity: 1;
+    background-color: @background_color_2;
+    transition: background-color linear 3s,opacity ease-out 3s 2.5s;
+  }
+  .ball-wrapper {
+    display: block;
+    position: absolute;
+    width: 370px;
+    height: 370px;
+    top: 680px;
+    left: 50%;
+    opacity: 1;
+    border-radius: 500px;
+    transform: translate(-185px, -185px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      width: inherit;
+      height: inherit;
+      top: -23px;
+      right: -23px;
+      /* bottom: 0; */
+      /* opacity: 0.5; */
+      .bg('/images/ball/ball_text.png');
+      /* background-size: 370px 370px; */
+      background-position: top right;
+      background-repeat: no-repeat;
+      background-size: 50%;
+      transform:  rotate(15deg);
+      animation: shining 4s linear forwards infinite;
+      /* background-color: #000; */
+    }
+    .after {
+      content: "";
+      display: block;
+      position: absolute;
+      width: inherit;
+      height: inherit;
+      top: 0;
+      bottom: 0;
+      opacity: 0.5;
+      .bg('/images/ball/ball.png');
+      background-size: 370px 370px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  }
+  .inner-light {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 300px;
+    box-shadow: 0 0 180px 20px rgba(249, 238, 102, 0.7);
+    width: inherit;
+    height: inherit;
+  }
+  .ball {
+    width: 280px;
+    height: 280px;
+    border-radius: 500px;
+    margin: 45px;
+    opacity: 1;
+    border: 1px solid rgb(249, 238, 102);
+    background-color: rgba(255,255,255,0.7);
+    box-shadow: 0 0 180px 70px rgba(249, 238, 102, 0.7);
+    transition: background-color 1s ease-out, opacity 0.5s ease;
+    background-size: contain;
+    transform: rotate(0deg);
+  }
+  .cell.light {
+    //background: rgba(249, 248, 175, 1);
+    //opacity: 0;
+    .ball-wrapper {
+      //transition: opacity ease-out 1s, top ease .3s, transform ease .3s !important;
+      //transform: translate(-185px, -185px);
+      //animation: light ease-out 4s forwards;
+      //border:none;
+      //opacity: 0;
+      //opacity: 0;
+      &:after{
+        //transition: opacity ease-out 1s;
+        animation: none;
+        opacity: 0;
+      }
+      .inner-light {
+        //display: none;
+      }
+      .after {
+        //transition: opacity ease-out 2.5s;
+        //opacity: 0;
+      }
+    }
+    .ball {
+      animation: light ease-out 4s forwards;
+      border-color: @border_color_1;
+      background: rgba(249, 248, 175, 1);
+      transition: background-color 1s ease-out, opacity 4s ease-out;
+    }
+    .inner-material {
+      //opacity: 0;
+      border-radius: 200px;
+    }
+  }
+  .ball-inner {
+    display: block;
+    width: inherit;
+    height: inherit;
+    border-radius: 200px;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    opacity: 0;
+    .inner-material {
+      display: none;
+      margin: 0;
+      content: "";
+      position: absolute;
+      line-height: 200px;
+      text-align: center;
+      top: 0;
+      left: 0;
+      width: 600px;
+      height: 600px;
+      background-image: -webkit-radial-gradient(275px 275px, circle cover, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.5) 5%, rgba(226, 211, 23, 0.1) 30%, rgba(226, 211, 23, 0.1) 100%);
+      background-image: radial-gradient(45px 45px 45deg, circle cover, yellow 0%, orange 100%, red 95%);
+      transform: translate(-50px, -50px);
+      background-color: @background_color_4;
+    }
+  }
+  .shelf-foreground {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
+    letter-spacing: 0.6em;
+    font-size: 20px;
+    transition: all ease 1s;
+    background-size: 750px auto;
+    background-color: @background_color_5;
+    background-position: top center;
+    background-repeat: no-repeat;
+    .bg('/images/ball/ball_fg.png');
+    &:after {
+      color: @color_2;
+    }
+  }
+  .shelf-background {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
+    letter-spacing: 0.6em;
+    font-size: 20px;
+    transition: all ease 1s;
+    background-size: 750px auto;
+    background-color: @background_color_5;
+    background-position: top center;
+    background-repeat: no-repeat;
+    &:after {
+      color: @color_3;
+    }
+  }
+  .shelf-foreground.light {
+    opacity: 0;
+  }
+  .outter-light{
+    display: block;
+    position: fixed;
+    width: 370px * 5;
+    height: 370px * 5;
+    top: 680px;
+    left: 50%;
+    opacity: 1;
+    border-radius: 5000px;
+    transform: translate(-50%, -50%) scale(0);
+    //border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 180px 70px rgba(249, 238, 102, 0.7);
+    transition: all ease 4s;
+    background: rgba(249, 248, 175, 1);
+  }
+  .cell.light .outter-light{
+    display: block;
+    opacity: 0;
+    //background-color: #000;
+    transform:  translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes shining {
+  0%{
+    opacity: 1;
+  }
+  50% {
+  opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,618 @@
+<!DOCTYPE HTML>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=750, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no, email=no"/>
+    <meta name="apple-touch-fullscreen" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="css/dialog.css"/>
+    <script src="/js/config.js" type="text/javascript" charset="UTF-8"></script>
+    <link rel="stylesheet" href="/css/stage.css">
+    <script src="https://cdn.bootcss.com/zepto/1.0rc1/zepto.min.js"></script>
+</head>
+
+<body>
+
+<div id="main">
+</div>
+<div id="loading-text">加载资源中...</div>
+
+</body>
+<script src="lib/css3d.js"></script>
+<script src="lib/orienter.js"></script>
+<script src="lib/art-template.min.js"></script>
+<script src="js/dialog.js"></script>
+<script>
+	var frames = 5;
+	var ran = function () {
+		return Math.floor(Math.random() * 15 - 5);
+	};
+
+	function getAnimation(x) {
+		var arr = ['0% {  transform: translate(0%, 0%) scale(1) }'];
+		for (var i = 2; i <= 10; i += 2) {
+			arr.push(i * 10 + '% { transform: translate(' + ran() + '%,' + ran() + '%) scale(' + (Math.random() * 0.15 + 0.925) + ')}');
+		}
+		var str = arr.join('\n');
+		str = '@keyframes waterFlow' + x + ' {\n  ' + str + '\n }';
+		return str;
+	}
+</script>
+
+<script>
+	(function () {
+		var styleSheet = document.createElement('style');
+		var i = 0;
+		var arr = [];
+		while (i < 32) {
+			arr.push('.m-rain-drop.anim_' + i + ':before {opacity: 1; transform: translate(0,0) skew(0,0); animation: waterFlow' + i + ' ' + ( 5 + Math.random() * 5 + 0.5) + 's ' + (Math.random() + 0.5) + 's linear infinite alternate; }');
+			arr.push(getAnimation(i));
+			i++;
+		}
+		var str = arr.join('\n');
+		styleSheet.innerHTML = str;
+		document.head.appendChild(styleSheet);
+
+	})();
+</script>
+<script>
+	var dropTypes = rainDrops.map(function (x) {
+		return x.file;
+	});
+	(function () {
+		var styleSheet = document.createElement('style');
+		var str = dropTypes.map(function (type, i) {
+			type = 'bigdrop' + Math.floor(Math.random() * 2.999);
+			return '.drop' + i + ':before { background-image: url("/images/stage/drops/' + type + '.png")}\n .drop' + i + ':after { background-image: url("/images/stage/drops/' + type + '.png")}\n';
+		}).join('\n');
+		styleSheet.innerHTML = str;
+		document.head.appendChild(styleSheet);
+	})();
+</script>
+<script>
+	document.body.addEventListener('touchstart', function (ev) {
+		ev && ev.preventDefault();
+	});
+</script>
+
+<script>
+	var syncKeys = ['rotationY', 'rotationY', 'rotationY', 'x', 'y',];
+
+	function syncStage0(rate, from, to) {
+		if (rate > 1) {
+			syncKeys.forEach(function (k) {
+				to[k] = from[k] * rate;
+			});
+		} else if (rate < 1) {
+			syncKeys.forEach(function (k) {
+				var dk = (from[k] - to[k]) * rate;
+				to[k] += dk;
+			});
+		}
+		to.updateT();
+	}
+
+	function syncStage(rate, from, to) {
+		to.rotationX = from.rotationX;
+		to.rotationY = from.rotationY;
+		to.rotationZ = from.rotationZ;
+		to.x = from.x;
+		to.y = from.y;
+		to.z = from.z;
+		to.updateT();
+	}
+</script>
+<script>
+	var arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+
+	var skyBgData = [];
+	for (var i = 0; i < arr.length; i++) {
+		skyBgData.push({ url: '/images/stage/skybox/' + i + '.jpg' });
+		//		skyBgData.push({ url: 'bg2/' + i + '.png' });
+	}
+
+</script>
+<script type="text/javascript">
+
+	//	var log = function (e) {
+	//		$.post('/log', { error: e });
+	//	};
+	//	window.onerror = function (e) {
+	//		log(e);
+	//	};
+	//创建场景
+	function run() {
+		var pano, drops;
+		var s = new C3D.Stage();
+		var BASE_Z = -300;
+		s.size(window.innerWidth, window.innerHeight).update();
+		document.body.onscroll = function (ev) {
+			ev.preventDefault();
+		};
+		document.body.addEventListener('textmenu', function (ev) {
+			ev.preventDefault();
+		});
+		document.getElementById('main').appendChild(s.el);
+		//创建1个立方体放入场景
+
+		var skyRect = { w: 128 * 20, h: 1170 * 0.6 };
+
+		function onDropTouchEnd(i) {
+			return function () {
+				this.le.el.classList.add('visited');
+				//			this.le.scale(1).update();
+				showDialog(i, pano);
+			};
+		}
+
+		function addDrops() {
+			var sp = new C3D.Sprite();
+			var R = 400;
+			var DROP_SIZE = 1 * (100 / 2);
+			var DROP_HEIGHT = 1 * (283 / 4);
+			//		sp.position(0, 0, 0).update();
+			//		s.addChild(sp);
+			var len = 31;
+			//只是根据图量出来的，没有具体意义
+			var allWidth = 226 * 5;
+			var groupWith = 226 * 2;
+			var anchors = [
+				[
+					32,
+					-R * 0.25,
+					1
+				],
+				[
+					58,
+					0,
+					0.85
+				],
+				[
+					96,
+					-R * 0.14,
+					1.2
+				],
+				[
+					139,
+					-R * 0.4,
+					1
+				],
+				[
+					168,
+					R * 0.15,
+					1
+				],
+				[
+					193,
+					-R * 0.32,
+					0.7
+				],
+				[
+					226,
+					-R * 0.15,
+					1
+				],
+				[
+					32 + 226,
+					-R * 0.25,
+					1
+				],
+				[
+					58 + 226,
+					0,
+					0.85
+				],
+				[
+					96 + 226,
+					-R * 0.14,
+					1.2
+				],
+				[
+					139 + 226,
+					-R * 0.4,
+					1
+				],
+				[
+					168 + 226,
+					R * 0.15,
+					1
+				],
+				[
+					193 + 226,
+					-R * 0.32,
+					0.7
+				],
+
+			];
+			var l = anchors.length;
+			//创建20个平面放入容器，并定义鼠标事件
+			for (var i = 0; i < len; i++) {
+				var imageURL = 'drops/' + dropTypes[i] + '.png';
+				var offsetX = Math.floor(i / l) * groupWith + anchors[i % l][0];
+				var alpha = (offsetX / allWidth);
+				var theta = (offsetX / allWidth) * 2 * Math.PI;
+				var p = new C3D.Plane();
+				var dy = anchors[i % l][1];
+				var scale = anchors[i % l][2];
+				p.size(DROP_SIZE * scale, DROP_HEIGHT * scale)
+				.position(Math.sin(theta) * R, dy - R * 0.15, -Math.cos(theta) * R)
+				.rotation(0, -alpha * 360, 0)
+				.buttonMode(true)
+				.class('m-rain-drop ' + 'drop' + i + ' anim_' + i)
+				.update();
+				sp.addChild(p);
+				p.on('touchstart', function (ev) {
+					ev.preventDefault();
+					var el = this.le.el;
+					el.classList.add('hovering');
+					setTimeout(function () {
+						el.classList.remove('hovering');
+					}, 1000);
+				});
+				p.on('touchend', onDropTouchEnd(i));
+			}
+			return sp;
+		}
+
+		function createPano(imgs, rect) {
+			var _len = imgs.length;
+			var _step = rect.w / _len;
+			var _radius = Math.floor(_step / 2 / Math.tan(Math.PI / _len)) - 1;
+
+			var _sp = new C3D.Sprite();
+			for (var i = 0; i < _len; i++) {
+				var _p = new C3D.Plane();
+				var _r = 360 / _len * i;
+				var _a = Math.PI * 2 / _len * i;
+				_p.size(_step, rect.h, 0)
+				.position(Math.sin(_a) * _radius, 0, -Math.cos(_a) * _radius)
+				.rotation(0, -_r, 0)
+				.material({
+					image: imgs[i].url,
+					repeat: 'no-repeat',
+					bothsides: false,
+				})
+				.class('m-sky-pano')
+				.update();
+				_sp.addChild(_p);
+			}
+			var _p1 = new C3D.Plane();
+			_p1.size(_radius * 2, _radius * 2, 0)
+			.position(0, rect.h / 2, 0)
+			.rotation(90, 0, 0)
+			.class('m-bottom')
+			.update();
+			_sp.addChild(_p1);
+
+			var _p2 = new C3D.Plane();
+			_p2.size(_radius * 2, _radius * 2, 0)
+			.position(0, -rect.h / 2, 0)
+			.rotation(90, 0, 0)
+			.class('m-top')
+			.update();
+			_sp.addChild(_p2);
+
+			return _sp;
+		}
+
+		function createSky(imgs, rect) {
+			var _len = imgs.length;
+			var _step = rect.w / _len;
+			var _radius = Math.floor(_step / 2 / Math.tan(Math.PI / _len)) - 1;
+
+			var _sp = new C3D.Sprite();
+			for (var i = 0; i < _len; i++) {
+				var _p = new C3D.Plane();
+				var _r = 360 / _len * i;
+				var _a = Math.PI * 2 / _len * i;
+				_p.size(_step, rect.h)
+				.position(Math.sin(_a) * _radius, 0, -Math.cos(_a) * _radius)
+				.rotation(0, -_r, 0)
+				//			.material({
+				//				image: imgs[i].url,
+				//				repeat: 'no-repeat',
+				//				size: 'contain',
+				//				bothsides: false,
+				//			})
+				.update();
+				_sp.addChild(_p);
+			}
+			return _sp;
+		}
+
+		pano = createPano(skyBgData, skyRect);
+		//	var sky = this.createSky(skyBgData, skyRect);
+		drops = addDrops();
+		//	topAndBottom = createTopAndBottom(skyRect);
+		pano.position(0, 0, 0).updateT();
+		//	sky.position(0, 0, 0).updateT();
+		drops.position(0, 0, 0).updateT();
+		//	topAndBottom.position(0, 0, 0).updateT();
+		s.addChild(pano);
+		//	s.addChild(sky);
+		s.addChild(drops);
+		//	s.addChild(topAndBottom);
+
+		//响应屏幕调整尺寸
+		function resize() {
+			s.size(window.innerWidth, window.innerHeight).update();
+		}
+
+		window.onresize = function () {
+			resize();
+		};
+		resize();
+
+		//刷新场景
+		var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame ||
+			function (callback) {
+				setTimeout(callback, 1000 / 60);
+			};
+
+		var hasBind = {
+			move: 0,
+			end: 0,
+		};
+		var touching = false;
+		var moveObject = {
+			originTouchPos: {
+				x: 0,
+				y: 0
+			},
+			oldTouchPos: {
+				x: 0,
+				y: 0
+			},
+			newTouchPos: {
+				x: 0,
+				y: 0
+			},
+			d: {
+				lat: 0,
+				lon: 0
+			},
+			c: {
+				lat: 0,
+				lon: 0
+			},
+			f: {
+				lat: 0,
+				lon: 0
+			},
+			firstDir: '',
+			req: null,
+			originTime: 0,
+			oldTime: 0,
+			newTime: 0,
+			dx: 0,
+			dy: 0,
+			ax: 0,
+			ay: 0,
+			time: 0,
+			stage: null,
+			init: function (stage) {
+				this.stage = stage_test;
+				this.onTouchStart = this.onTouchStart.bind(this);
+				this.onTouchMove = this.onTouchMove.bind(this);
+				this.onTouchEnd = this.onTouchEnd.bind(this);
+				this.stage.on('touchstart', this.onTouchStart, true);
+				//			hammertime.on('panstart', this.onTouchStart);
+				this.reqRotate();
+				var that = this;
+				var g = new Orienter({
+					onOrient: function (t) {
+						if (that.stage.lockMove) return 1;
+						that.d.lat = t.lat;
+						that.d.lon = -t.lon;
+						//					if (touching) {
+						//						that.f.lat = -that.d.lat;
+						//						that.f.lon = -that.d.lon;
+						//					}
+					}
+				});
+				g.init();
+				console.log(this.stage);
+			},
+			clear: function () {
+				this.stage.off('touchstart', this.onTouchStart);
+				this.state.off('touchmove', this.onTouchMove);
+				this.state.off('touchend', this.onTouchEnd);
+			},
+			onTouchStart: function (_e) {
+				_e.preventDefault();
+				this.firstDir = '';
+				//			var e = _e.changedPointers[0];
+				var e = _e.changedTouches[0];
+				if (this.stage.lockMove) return 1;
+				this.originTouchPos.x = this.oldTouchPos.x = this.newTouchPos.x = e.clientX;
+				this.originTouchPos.y = this.oldTouchPos.y = this.newTouchPos.y = e.clientY;
+				this.originTime = this.oldTime = this.newTime = Date.now();
+				this.dx = this.dy = this.ax = this.ay = 0;
+
+				this.stage.on('touchmove', this.onTouchMove);
+				this.stage.on('touchend', this.onTouchEnd, true);
+
+				//          hammertime.on('panmove', this.onTouchMove);
+				//          hammertime.on('panend', this.onTouchEnd);
+				touching = true;
+				//			console.log('start');
+			},
+			onTouchMove: function (e) {
+				e.preventDefault();
+				if (this.stage.lockMove) return 1;
+				//			console.log('move');
+				e = e.changedTouches[0];
+				//			e = e.changedPointers[0];
+				this.newTouchPos.x = e.clientX;
+				this.newTouchPos.y = e.clientY;
+				this.newTime = Date.now();
+				this.checkGesture();
+				this.oldTouchPos.x = this.newTouchPos.x;
+				this.oldTouchPos.y = this.newTouchPos.y;
+				this.oldTime = this.newTime;
+			},
+			onTouchEnd: function () {
+				this.newTime = Date.now();
+				var t = (this.newTime - this.oldTime) / 1000;
+				touching = false;
+				//			hammertime.off('panmove', this.onTouchMove);
+				//			hammertime.off('panend', this.onTouchEnd);
+				this.stage.off('touchmove', this.onTouchMove);
+				this.stage.off('touchend', this.onTouchEnd);
+			},
+			checkGesture: function () {
+				if (this.stage.lockMove) return 1;
+				this.dx = this.fixed2(this.newTouchPos.x - this.originTouchPos.x);
+				this.dy = this.fixed2(this.newTouchPos.y - this.originTouchPos.y);
+				this.ax = this.fixed2(this.newTouchPos.x - this.oldTouchPos.x);
+				this.ay = this.fixed2(this.newTouchPos.y - this.oldTouchPos.y);
+				this.time = (this.newTime - this.oldTime) / 1000;
+				if (this.firstDir === '') {
+					this.firstDir = (Math.abs(this.ax) > Math.abs(this.ay)) ? 'x' : 'y';
+				}
+				var data = {
+					dx: this.dx,
+					dy: this.dy,
+					ax: this.ax,
+					ay: this.ay,
+					dir: this.firstDir
+				};
+				this.computedMove(data);
+
+			},
+			fixed2: function (t) {
+				return Math.floor(100 * t) / 100;
+			},
+			computedMove: function (t) {
+				this.c.lon = (this.c.lon - .2 * t.ax) % 360;
+				this.c.lat = Math.max(-90, Math.min(90, this.c.lat + .2 * t.ay));
+			},
+			reqRotate: function () {
+				this.req = requestAnimationFrame(this.reqRotate.bind(this));
+				if (!this.stage.lockMove) {
+					var t = (this.d.lon + this.f.lon + this.c.lon) % 360;
+					var i = .35 * (this.d.lat + this.f.lat + this.c.lat);
+
+					if ((t - this.stage.rotationY) > 180) {
+						this.stage.rotationY += 360;
+					}
+
+					if ((t - this.stage.rotationY) < -180) {
+						this.stage.rotationY -= 360;
+					}
+
+					var n = t - this.stage.rotationY
+						, a = i - this.stage.rotationX;
+
+					if (Math.abs(n) < .1) {
+						this.stage.rotationY = t;
+					} else {
+						this.stage.rotationY += .3 * n;
+					}
+
+					if (Math.abs(a) < .1) {
+						this.stage.rotationX = i;
+					} else {
+						this.stage.rotationX += .15 * a;
+					}
+					var s = BASE_Z - 2 * Math.abs(n);
+					this.stage.z += .3 * (s - this.stage.z);
+
+					this.stage.updateT();
+					syncStage(1.2, this.stage, drops);
+				}
+			}
+		};
+		setTimeout(function () {
+			document.getElementById('loading-text').style.opacity = '0';
+		}, 1000);
+		setTimeout(function () {
+					document.getElementById('loading-text').style.display = 'none';
+			moveObject.init(pano);
+		}, 2000);
+		drops.on('touchstart', function (ev) {
+			ev.preventDefault();
+			moveObject.onTouchStart.call(moveObject, ev);
+		}, true);
+		drops.on('touchmove', function (ev) {
+			ev.preventDefault();
+			moveObject.onTouchMove.call(moveObject, ev);
+		});
+		drops.on('touchend', function (ev) {
+			ev.preventDefault();
+			moveObject.onTouchEnd.call(moveObject, ev);
+		});
+	}
+
+
+</script>
+<script>
+	function loading() {
+		var len = dropTypes.length + skyBgData.length + 3;
+		var loaded = 0;
+		var wrap = document.getElementById('loading-text');
+
+		var loadCb = function (url) {
+			loaded++;
+			wrap.innerHTML = '加载资源中: ' + (100 * loaded / len).toFixed(2) + '%';
+			if (loaded == len) {
+				wrap.innerHTML = '全部加载完成...<br/>场景渲染中，请稍候';
+				run();
+			}
+		};
+		dropTypes.forEach(function (type) {
+			load('/images/stage/drops/' + type + '.png', loadCb);
+		});
+		skyBgData.forEach(function (x) {
+			load(x.url, loadCb);
+		});
+		load('/images/stage/drops/bigdrop0.png', loadCb);
+		load('/images/stage/drops/bigdrop1.png', loadCb);
+		load('/images/stage/drops/bigdrop2.png', loadCb);
+
+	}
+
+	function load(imgURL, cb) {
+		var image = new Image();
+		image.onload = cb.bind(null, imgURL);
+		image.src = imgURL;
+	}
+
+	loading();
+</script>
+<script type="text/html" id="dialog_rain">
+    <div class="g-dialog-mask" id="dialog_<%=index%>">
+        <div class="g-dialog show">
+            <div class="m-dialog-head">
+                <canvas class="m-wave-bg" id="canvas" height="270" width="600"></canvas>
+                <div class="m-play-btn"></div>
+            </div>
+            <div class="m-dialog-content">
+                <div class="m-dialog-title break">
+                    <span class="m-user">@<%- user %></span>
+                    <span class="m-time"><%= time %></span>
+                </div>
+                <div class="m-dialog-music-title"> <%= position %></div>
+                <div class="m-dialog-content-text">
+                    <%- content %>
+                </div>
+
+            </div>
+            <div class="m-dialog-footer">
+                <button type="button" class="m-share-tip-btn"><span>分享给朋友</span></button>
+                <button type="button" class="m-share-qr-btn"><span>贡献我的雨声</span></button>
+            </div>
+            <div class="m-qr-block">
+                <img src="/images/dialog/qr_img.jpg" alt="新世相" class="m-qr-image"/>
+            </div>
+            <div class="m-close-btn"></div>
+        </div>
+        <div class="m-share-tip"></div>
+    </div>
+</script>
+</body>
+
+</html>

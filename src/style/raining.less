@@ -1,0 +1,57 @@
+
+.rainAnim {
+  display: block;
+  position: fixed;
+  top:0;
+  left:0;
+  opacity: 0.1;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  &.ready{
+    animation: rain steps(1) 0.32s infinite;
+  }
+}
+
+.rainbg(@str) {
+  .bg("/images/rainAnim/@{str}.png")
+}
+
+@keyframes rain {
+  0% {
+    .rainbg(0);
+  }
+  10% {
+    .rainbg(1);
+  }
+  20% {
+    .rainbg(2);
+  }
+  30% {
+    .rainbg(3);
+  }
+  40% {
+    .rainbg(4);
+  }
+  50% {
+    .rainbg(5);
+  }
+  60% {
+    .rainbg(6);
+  }
+  70% {
+    .rainbg(7);
+  }
+  80% {
+    .rainbg(8);
+  }
+  90% {
+    .rainbg(9);
+  }
+  100% {
+    .rainbg(10);
+  }
+}
+

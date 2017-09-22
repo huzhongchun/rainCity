@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<head>
+    <script src="../lib/css3d.js"></script>
+    <style>
+        body {
+            background-color: #000;
+        }
+
+        .m-rain-drop {
+            background-size: contain;
+            background-position: center;
+            opacity: 0.7 !important;
+        }
+    </style>
+</head>
+<body>
+<script>
+	//创建场景
+	const R = 1290;
+	var s = new C3D.Stage();
+	var sp = new C3D.Sprite();
+
+	s.size(window.innerWidth, window.innerHeight).material({
+		color: '#000'
+	}).update();
+	document.body.appendChild(s.el);
+
+	//创建一个三维容器（创建以方便分组使用）
+	function addDrops(sp) {
+		sp.position(0, 0, 0).update();
+		s.addChild(sp);
+		var len = 36;
+		var yFillRange = 0.6;
+		var xFillRange = 0.1;
+		var zFillRange = 0.2;
+		//创建20个平面放入容器，并定义鼠标事件
+		for (var i = 0; i < len; i++) {
+			//		var imageURL = './img/drop' + Math.floor(Math.random() * 2.9) + '.png';
+			var imageURL = './img/drop0.png';
+			var theta = (i / len) * 2 * Math.PI;
+			var p = new C3D.Plane();
+			var dx = R * xFillRange * 0.5 - Math.random() * R * xFillRange;
+			var dy = R * yFillRange * 0.5 - Math.random() * R * yFillRange;
+			var dz = R * zFillRange * 0.5 - Math.random() * R * zFillRange;
+			p.size(300, 300, 0)
+			.position(Math.sin(theta) * R + dx, Math.sin(theta * 4) * 0.1 * R + dy, Math.cos(theta) * R + dz)
+			.rotation(0, i / len * 360, 0)
+			.material({
+				image: imageURL,
+			})
+			.buttonMode(true)
+			.class('m-rain-drop')
+			.update();
+			sp.addChild(p);
+			p.on('mouseover', function () {
+				this.le.scale(1.05).update();
+			});
+			p.on('mouseout', function () {
+				this.le.scale(1).update();
+			});
+		}
+	}
+
+	addDrops(sp);
+
+	//	//创建4个立方体放入容器，并定义鼠标事件
+	//	for (var i = 0; i < 4; i++) {
+	//		var p = new C3D.Box();
+	//		p.size(100, 100, 100)
+	//		.position(Math.random() * 500 - 250, Math.random() * 500 - 250, Math.random() * 500 - 250)
+	//		.rotation(Math.random() * 300 - 150, Math.random() * 300 - 150, Math.random() * 300 - 150)
+	//		.material({
+	//			color : C3D.getRandomColor()
+	//		})
+	//		.buttonMode(true)
+	//		.update();
+	//		sp.addChild(p);
+	//		p.on("mouseover", function() {
+	//			this.le.scale(1.1).update();
+	//		});
+	//		p.on("mouseout", function() {
+	//			this.le.scale(1).update();
+	//		});
+	//	}
+
+	//响应屏幕调整尺寸
+	function resize() {
+		s.size(window.innerWidth, window.innerHeight).update();
+	}
+
+	window.onresize = function () {
+		resize();
+	};
+	resize();
+
+	//刷新场景
+	requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame ||
+		function (callback) {
+			setTimeout(callback, 1000 / 60);
+		};
+
+	function go() {
+		sp.rotate(0, 0.2, 0).updateT();
+		// sp.move(0, 1, 0).update();
+
+		requestAnimationFrame(go);
+	}
+
+	requestAnimationFrame(go);
+
+</script>
+</body>

@@ -1,0 +1,221 @@
+body, html {
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: #000;
+}
+
+body.ball-body {
+    background-image: url('/images/ball/ball_bg.png');
+    background-size: 750px auto;
+    background-position: top center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+body::before {
+    display: block;
+    color: #000;
+    position: absolute;
+    width: 40px;
+    top: 50%;
+    /*content: "这里是背景图片";*/
+    font-weight: bold;
+    font-size: 40px;
+    left: 50%;
+    line-height: 2;
+    transform: translate(-50%, -50%);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+.cell {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    background-color: rgba(226, 211, 23, 0);
+    transition: background-color ease 3s;
+}
+
+.ball-wrapper {
+    display: block;
+    position: absolute;
+    width: 370px;
+    height: 370px;
+    /*overflow: hidden;*/
+    top: 850px;
+    left: 50%;
+    opacity: 0;
+    border-radius: 500px;
+    transform: translate(-185px, -185px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.ball-wrapper:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    top: 0;
+    bottom: 0;
+    /*background-color: rgba(255,255,255,0.7);*/
+    opacity: 0.5;
+    background-image: url('/images/ball/ball.png');
+    background-size: 370px 370px;
+    background-position: center;
+    background-repeat: no-repeat;
+    /*background-image: -webkit-radial-gradient(0px 0px, circle cover, rgba(255,255,255, 0.1) 0%, rgba(200, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.5) 100%);*/
+}
+
+.ball {
+    width: 280px;
+    height: 280px;
+    border-radius: 500px;
+    margin: 45px;
+    opacity: 1;
+    border: 1px solid rgb(249, 238, 102);
+    background-color: rgba(226, 211, 23, 0.1);
+    box-shadow: 0 0 50px 6px rgba(226, 211, 23, 0.7);
+    transition: background-color 1s ease-out, opacity 0.5s ease;
+    background-size: contain;
+    /*background-image: url('demo/iamges/airball.png');*/
+    /*background-image: -webkit-radial-gradient(75px 75px, circle cover, rgba(249, 245, 183, 0.4) 0%, rgba(226, 219, 182, 0.7) 30%, rgb(226, 220, 116) 100%);*/
+    /*background-image: radial-gradient(45px 45px 45deg, circle cover, yellow 0%, orange 100%, red 95%);*/
+
+}
+
+.cell.light {
+    /*background-color:rgba(249, 238, 102,1);*/
+}
+
+.cell.light .ball-wrapper {
+    transition: opacity ease-out 1s, top ease .3s, transform ease .3s !important;
+    /*top: 50%;*/
+    transform: translate(-185px, -185px);
+    opacity: 0;
+}
+
+.cell.light .ball-wrapper:after {
+    transition: opacity ease-out 0.5s;
+    opacity: 0;
+}
+
+.cell.light .ball {
+    animation: light ease-out 4s forwards;
+    /*border-color: rgba(226, 211, 23, 1);*/
+    /*opacity: 0;*/
+    border-color: transparent;
+    background:  rgba(249, 248, 175, 1);
+    transition: background-color 1s ease-out, opacity 4s ease-out;
+}
+
+.cell.light .inner-material {
+    /*transition: opacity 0.3s ease-out;*/
+    opacity: 0;
+    border-radius: 200px;
+
+}
+
+.ball-inner {
+    display: block;
+    width: inherit;
+    height: inherit;
+    border-radius: 200px;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    opacity: 1;
+}
+
+.ball-inner .inner-material {
+    display: block;
+    margin: 0;
+    content: "";
+    position: absolute;
+    line-height: 200px;
+    text-align: center;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    background-image: -webkit-radial-gradient(275px 275px, circle cover, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.5) 5%, rgba(226, 211, 23, 0.1) 30%, rgba(226, 211, 23, 0.1) 100%);
+    background-image: radial-gradient(45px 45px 45deg, circle cover, yellow 0%, orange 100%, red 95%);
+    transform: translate(-50px, -50px);
+    background-color: #fff;
+}
+
+.shelf-foreground, .shelf-background {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
+    letter-spacing: 0.6em;
+    font-size: 20px;
+    transition: all ease 1s;
+    background-size: 750px auto;
+    background-color: transparent;
+    background-position: top center;
+    background-repeat: no-repeat;
+}
+
+.shelf-background {
+    /*transform: translate(50px, -20px);*/
+    /*padding-left: 50px;*/
+    /*margin-top: -20px;*/
+    /*background-image: url('/demo/images/ball/ball_bg.png');*/
+}
+
+.shelf-foreground {
+    /*transform: translate(-50px, 20px);*/
+    background-image: url('/images/ball/ball_fg.png');
+}
+
+.shelf-foreground.light {
+    opacity: 0;
+}
+
+.shelf-foreground:after {
+    /*content: "铁架子前边";*/
+    color: #999;
+}
+
+.shelf-background:after {
+    /*content: "铁架子后边";*/
+    color: #666;
+}
+
+@keyframes light {
+    0% {
+        box-shadow: 0 0 50px 6px rgba(249, 238, 102, 0.7);
+    }
+    70% {
+        background-color: rgba(249, 248, 175, 1);
+        box-shadow: 0 0 100vw 100vh rgba(249, 248, 175, 1);
+    }
+    100% {
+        background-color: #fff;
+        box-shadow: 0 0 100vh 100vh rgb(255,255,255);
+    }
+}
+
+@-webkit-keyframes light {
+    0% {
+        box-shadow: 0 0 50px 6px rgba(249, 238, 102, 0.7);
+    }
+    70% {
+        background-color: rgba(249, 248, 175, 1);
+        box-shadow: 0 0 80vw 80vh rgba(249, 248, 175, 1);
+    }
+    100% {
+        background-color: #fff;
+        box-shadow: 0 0 100vh 100vh rgb(255,255,255);
+    }
+}

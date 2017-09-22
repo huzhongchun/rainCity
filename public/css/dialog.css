@@ -1,0 +1,314 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.clearfix:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.break {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+.g-dialog-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+}
+.g-dialog {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -400px;
+    margin-left: -277px;
+    width: 555px;
+    height: 800px;
+    z-index: 10000;
+    box-sizing: border-box;
+    font-size: 24px;
+    background-color: #fff;
+    color: #333;
+    line-height: 1.5;
+    opacity: 0;
+
+    box-shadow: 0 0 15px 0px rgba(255, 255, 255, .2);
+    text-shadow: 0 0 15px #fff;
+    border-radius: 12px;
+    transform: translate3d(0,0,0);
+}
+
+.g-dialog .m-dialog-head {
+    position: relative;
+    height: 270px;
+    box-sizing: border-box;
+    padding: 40px 40px 0 40px;
+    border-radius: 12px 12px 0 0;
+    background-color: #44b0af;
+    background-image: url('../images/dialog/dialog-head-bg.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    text-align: center;
+    overflow: hidden;
+}
+
+.g-dialog .m-qr-block {
+    display: none;
+    background-image: url('../images/dialog/qr.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10020;
+    text-align: center;
+}
+.g-dialog .m-close-btn {
+    box-sizing: border-box;
+    position: absolute;
+    bottom: -90px;
+    left: 50%;
+    margin-left: -30px;
+    border-radius: 60px;
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    border: 2px solid #fff;
+    color: #fff;
+    transform: rotate(0deg);
+    transition: all ease .3s;
+}
+.g-dialog .m-close-btn:hover {
+    opacity: 0.7;
+    transform: rotate(90deg);
+}
+.m-close-btn:before,.m-close-btn:after {
+    display: block;
+    position: absolute;
+    content: "";
+    width : 30px;
+    top: 27px;
+    left: 13px;
+    border-top: 2px solid #fff;
+}
+
+.m-close-btn:before {
+    transform: rotate(-45deg);
+}
+.m-close-btn:after {
+    transform: rotate(45deg) translateX(-1px);
+}
+
+.m-qr-block .m-qr-image{
+    /*content: "";*/
+    display: block;
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin-top: 90px;
+    margin-left: 122px;
+    background-image: url('/images/dialog/qr_img.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    border-radius: 8px;
+}
+.m-wave-bg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.m-play-btn {
+    display: block;
+    position: relative;
+    margin: 20px auto auto auto;
+    width: 120px;
+    height: 160px;
+    background-image: url('../images/dialog/play-btn.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.95;
+    transition: opacity ease-out .2s;
+}
+
+.m-play-btn.m-pause-btn {
+    background-image: url('../images/dialog/pause-btn.png');
+}
+
+.m-play-btn.m-btn-touching {
+    opacity: 0.8;
+    animation: btnAnim0 0.5s ease-out forwards;
+}
+
+
+@keyframes btnAnim0 {
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.1);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.g-dialog .m-dialog-title {
+    font-size: 28px;
+    color: #000;
+    transform-origin: left top;
+}
+
+.g-dialog .m-dialog-content {
+    position: relative;
+    padding: 20px;
+    height: 430px;
+    box-sizing: border-box;
+}
+
+.g-dialog.show{
+    display: block;
+    opacity: 0;
+    animation: showDialog 0.3s 0.5s ease-out forwards;
+}
+.g-dialog .m-qr-block.show {
+    display: block;
+    opacity: 0;
+    animation: showQR 0.3s ease-out forwards;
+}
+
+.m-user {
+    display: inline;
+    vertical-align: text-bottom;
+    font-weight: bold;
+    font-size: 28px;
+    letter-spacing: 0.1em;
+}
+
+.m-time {
+    display: inline;
+    vertical-align: text-bottom;
+    padding-left: 16px;
+    font-size: 24px;
+    letter-spacing: 0.1em;
+}
+
+.m-dialog-music-title {
+    font-size: 24px;
+    padding-left: 28px;
+    letter-spacing: 0.1em;
+    padding-bottom: 10px;
+}
+
+.m-dialog-content-text {
+    top: auto;
+    bottom: 0;
+    box-sizing: border-box;
+    background-color: #ddd6d9;
+    line-height: 1.6;
+    font-size: 24px;
+    user-select: none;
+    padding: 0 5px;
+    letter-spacing: 0.1em;
+    border-top: 8px solid #ddd6d9;
+    border-bottom: 8px solid #ddd6d9;
+}
+
+.m-table {
+    height: 100%;
+}
+
+.m-dialog-footer {
+    box-sizing: border-box;
+    text-align: center;
+    padding-top: 16px;
+}
+
+.m-dialog-footer button {
+    display: inline-block;
+    vertical-align: top;
+    color: #333;
+    border-radius: 40px;
+    margin: 0 20px;
+    padding: 0;
+    width: 200px;
+    text-align: center;
+    height: 58px;
+    line-height: 50px;
+    background-color: #5bc2ba;
+    border: none;
+    font-size: 25px;
+    outline: none;
+    user-select: none;
+    letter-spacing: 3px;
+    text-indent: 3px;
+}
+
+.m-dialog-footer button span {
+    display: inline-block;
+    transform: scale(0.9);
+}
+
+.g-share-tip {
+    position: fixed;
+    top:0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,.4);
+}
+.g-share-tip:after{
+    position: absolute;
+    content: "";
+    width: 388px;
+    height: inherit;
+    top: 0;
+    right: 30px;
+    background-image: url('/images/dialog/share_tip.png');
+    background-position: top right;
+    background-repeat: no-repeat;
+    background-size: 388px auto;
+}
+@keyframes showDialog {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translate3d(0,0,0);
+    }
+    to {
+        opacity: 0.9;
+        transform: scale(1) translate3d(0,0,0);
+    }
+}
+@keyframes showQR {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+#info {
+    color: #fff;
+}
+
+.m-share-tip {
+    position: fixed;
+    top:0;
+    left: 0;
+
+}

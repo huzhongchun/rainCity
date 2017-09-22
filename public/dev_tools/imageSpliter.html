@@ -1,0 +1,112 @@
+<html>
+<head>
+    <style>
+        canvas {
+            float: left;
+            margin-left: 15px;
+            /*transform: scale(0.2);*/
+            /*transform-origin: left top;*/
+        }
+    </style>
+</head>
+<body>
+<div>
+    <label>横切片数：</label>
+    <input type="number" id="len" value="1"/>
+    <input type="file" id="input"/>
+</div>
+
+<script src="../lib/base64.js"></script>
+<script src="../lib/FileSaver.js"></script>
+<script src="../lib/jszip.min.js"></script>
+<script>
+
+	var input = document.getElementById('input');
+	var lenInput = document.getElementById('len');
+	var len = 1;
+	input.onchange = readImage;
+	lenInput.onchange = function (ev) {
+		len = parseInt(ev.target.value);
+	};
+
+	var zip = new JSZip();
+	var imgFolder = zip.folder('images');
+
+	function readImage(ev) {
+		var file = ev.target.files[0];
+		var reader = new FileReader();
+		reader.addEventListener('load', function (ev) {
+			var blob = new Blob([ev.target['result']]);
+			window.URL = window.URL || window['webkitURL'];
+			var blobURL = window.URL.createObjectURL(blob);
+			var image = new Image();
+			image.src = blobURL;
+			image.addEventListener('load', function () {
+				for (var i = 0; i < len; i++) {
+					createCanvas(image, i);
+				}
+				zip.generateAsync({ type: 'blob' })
+				.then(function (content) {
+					// see FileSaver.js
+					saveAs(content, 'example.zip');
+				});
+
+			});
+
+		});
+		reader.readAsArrayBuffer(file);
+	}
+
+	function createCanvas(image, index) {
+		var w = image.width;
+		var sw = w / len;
+		var h = image.height;
+		var canvas = document.createElement('canvas');
+		canvas.width = sw;
+		canvas.height = h;
+		//		document.body.appendChild(canvas);
+		var ctx = canvas.getContext('2d');
+		ctx.drawImage(image, sw * index, 0, sw, h, 0, 0, sw, h);
+		var content = canvas.toDataURL();
+		var startIndex = content.indexOf('base64,');
+		imgFolder.file(index + '.png', content.slice(startIndex + 7), { base64: true });
+		//		downloadFile(index+'.jpg',content.slice(startIndex+7));
+	}
+
+	function downloadFile(fileName, base64Content) {
+		console.log(fileName);
+		var aLink = document.createElement('a');
+		var blob = b64toBlob(base64Content, 'image/png;');
+		var evt = document.createEvent('HTMLEvents');
+		evt.initEvent('click', false, false);//initEvent 不加后两个参数在FF下会报错, 感谢 Barret Lee 的反馈
+		aLink.download = fileName;
+		aLink.href = window.URL.createObjectURL(blob);
+		aLink.dispatchEvent(evt);
+		aLink.click();
+	}
+
+	function b64toBlob(b64Data, contentType, sliceSize) {
+		contentType = contentType || '';
+		sliceSize = sliceSize || 512;
+		var byteCharacters = atob(b64Data);
+		var byteArrays = [];
+
+		for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+			var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+			var byteNumbers = new Array(slice.length);
+			for (var i = 0; i < slice.length; i++) {
+				byteNumbers[i] = slice.charCodeAt(i);
+			}
+
+			var byteArray = new Uint8Array(byteNumbers);
+
+			byteArrays.push(byteArray);
+		}
+
+		var blob = new Blob(byteArrays, { type: contentType });
+		return blob;
+	}
+</script>
+</body>
+</html>

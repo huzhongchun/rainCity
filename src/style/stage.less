@@ -1,0 +1,210 @@
+@import "func";
+@color_1: tomato;
+@color_2: #000;
+@background_color_1: #000;
+@background_color_2: transparent;
+@background_color_3: #fff;
+
+@keyframes water {
+  0% {
+    transform: scale(0.95);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.5);
+    opacity: 0.1;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes waterFlow {
+  0% {
+    transform: translate(0%, 0%) scale(1);
+  }
+  20% {
+    transform: translate(-3%, 0%) scale(1.1);
+  }
+  40% {
+    transform: translate(2%, 2%) scale(1.05);
+  }
+  60% {
+    transform: translate(-4%, -4%) scale(0.98);
+  }
+  80% {
+    transform: translate(0%, 4%) scale(1.03);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+html {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background-color: @background_color_1;
+}
+body.stage-body {
+
+  #main {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    opacity: 0.8;
+  }
+  .m-bottom {
+    &:before {
+      display: block;
+      position: absolute;
+      content: "";
+      background-repeat: no-repeat;
+      .bg('/images/stage/final_bottom.jpg');
+      background-position: center;
+      //background-size: 141.4%;
+      background-size: 97%;
+      background-color: #23253A;
+      left: -20px;
+      right: -20px;
+      top: -20px;
+      bottom: -20px;
+      transform: scale(1,-1) rotate(65deg);
+    }
+  }
+  .m-top {
+    &:before {
+      display: block;
+      position: absolute;
+      content: "";
+      .bg('/images/stage/top2.jpg');
+      background-repeat: no-repeat;
+      background-color: @background_color_1;
+      background-size: contain;
+      background-size: 100%;
+      background-position: center;
+      left: -10px;
+      right: -10px;
+      top: -10px;
+      bottom: -10px;
+    }
+  }
+
+  .m-sky-pano {
+    background-size: 100%;
+    background-color: @background_color_1;
+    background-position: center;
+    text-align: center;
+    &:before {
+      display: inline-block;
+      vertical-align: middle;
+      height: 100%;
+    }
+    &:after {
+      display: inline-block;
+      vertical-align: middle;
+      color: @color_1;
+      font-size: 40px;
+      margin: auto;
+      width: 0px;
+    }
+  }
+  #loading-text {
+    display: block;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    text-align: center;
+    line-height: 2;
+    padding-top: 40vh;
+    box-sizing: border-box;
+    font-size: 28px;
+    background-color: #000;
+    color: @color_2;
+    z-index: 1000000;
+    transition: opacity ease-out 1s;
+  }
+}
+
+
+.m-rain-drop {
+  background-size: contain;
+  background-position: top center;
+  background-color: transparent !important;
+  opacity: 0.7 !important;
+  transition: all ease .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  transform-origin: top center;
+  &:before {
+    position: absolute;
+    content: "";
+    display: block;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-size: contain;
+    background-position: center;
+    //background-color: @background_color_2 !important;
+    background-repeat: no-repeat;
+    transition: opacity linear 1s;
+    opacity: 0;
+    //transform-origin: top center;
+  }
+  &:after {
+    position: absolute;
+    display: block;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-size: contain;
+    background-position: center;
+    background-color: @background_color_2 !important;
+    background-repeat: no-repeat;
+    //background-color: #f00;
+    opacity: 1;
+    //transform-origin: top center;
+  }
+}
+
+.m-rain-drop.visited {
+  &:not(.hovering) {
+    opacity: 0.8 !important;
+    -webkit-filter: saturate(33%);
+    filter: saturate(33%);
+  }
+}
+.m-drop-rope {
+  box-shadow:  0 0 30px 0px #fff;
+  transform-origin: bottom center;
+  &:before{
+    display: block;
+    position: absolute;
+    content: "";
+    top: -1000px;
+    height: 1000px;
+    //border-left: 1px solid #fff;
+    opacity: 1;
+    box-shadow:  0 0 1px 1px rgba(196, 207, 224, 0.15);
+    transition: opacity ease 1.5s;
+
+  }
+}
+.m-rain-drop.hovering {
+  &:before {
+    animation: water 0.8s linear forwards !important;
+  }
+  &:after {
+    content: "";
+  }
+  +.m-drop-rope:before {
+    opacity: 0 !important;
+  }
+}
