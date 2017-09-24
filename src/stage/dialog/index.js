@@ -136,7 +136,7 @@ export const showDialog = (function () {
 		el.addClass('show');
         setWxShareOpt({
             title: '我分享了一段来自'+data.position+'的雨声给你，不来听听吗？',
-            desc: '我找了30个国家和省市的人，录了雨声送给你。（改的地方是摘要和标题互换了）',
+            desc: '我找了30个国家和省市的人，录了雨声送给你。',
             timeLineTitle: '我分享了一段来自'+data.position+'的雨声给你，不来听听吗？',
             imgUrl:process.env.CDN_PREFIX+'/images/share_img.jpg',
             link: location.href
