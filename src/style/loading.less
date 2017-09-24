@@ -121,7 +121,7 @@ body.loading-body {
     left: 50%;
     overflow: hidden;
     background-color: @background_color_2;
-    .bg('/images/rain/rain_city.jpg');
+    .bg('/images/loading/loadingbg.jpg');
     background-position: center;
     background-size: cover;
     transform-origin: top center;
@@ -177,7 +177,7 @@ body.loading-body {
     }
   }
   .mask {
-    .bg('/images/loading/mask.png');
+    //.bg('/images/loading/mask.png?v=2');
     position: fixed;
     left: 0;
     top: 0;
@@ -209,6 +209,23 @@ body.loading-body {
   }
   video.playing {
     opacity: 1;
+  }
+  .video {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    opacity: 0;
+    background-color: transparent;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: opacity 1s ease;
+    &.playing {
+      opacity: 1;
+    }
   }
 }
 

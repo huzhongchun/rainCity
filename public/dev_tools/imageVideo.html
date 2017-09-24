@@ -1,0 +1,149 @@
+<html>
+<head>
+    <style>
+        .video {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            background-color: #000;
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+    </style>
+</head>
+<body>
+<canvas class="video"></canvas>
+</body>
+<script src="../lib/lodash.min.js"></script>
+<script src="../lib/jszip.min.js"></script>
+<script>
+
+	function loadXHR(url, cb) {
+		const xhr = new XMLHttpRequest();
+		xhr.open('GET', url, true);
+		xhr.responseType = 'blob';
+		xhr.onload = function () {
+			if (xhr.status < 400 && xhr.status >= 200) {
+				const newURL = (URL || webkitURL).createObjectURL(xhr.response);
+
+				cb(newURL);
+			}
+			else {
+
+			}
+		};
+		xhr.send();
+
+	}
+</script>
+<script>
+	var images = _.range(1, 414).filter(x => x % 2).map(x => `/video/${x}.jpg`);
+	var urls = [];
+</script>
+<script>
+	function imageLoaded(url) {
+		urls.push(url);
+		console.log(`${urls.length} / ${images.length}`);
+		if (urls.length === images.length) {
+			//finished
+			//            generateStyle();
+			draw();
+		}
+	}
+</script>
+<script>
+	var draw = function () {
+		var c = document.getElementsByClassName('video')[0];
+		c.setAttribute('width', 320);
+		c.setAttribute('height', 504);
+		var w = window.innerWidth, h = window.innerHeight;
+		var ctx = c.getContext('2d');
+		var len = urls.length;
+		var i = 0;
+		var s = setInterval(function () {
+			i++;
+			var image = new Image();
+			image.onload = function () {
+				ctx.drawImage(image, 0, 0, 320, 504);
+			};
+			image.src = urls[i];
+			if (i >= len) {
+				clearInterval(s);
+			}
+		}, 16);
+	};
+</script>
+<script>
+	function generateStyle() {
+		var s = document.createElement('style');
+		var len = urls.length;
+		var str = urls.map((url,
+			i) => `${(100 * i / len).toFixed(4)}% { background-image: url(${url})}`).join('\n');
+		var inner = `@keyframes video{
+    	${str}
+    	}`;
+		inner += `.video { animation: video steps(1) 8.1s}`;
+		s.innerHTML = inner;
+		document.head.appendChild(s);
+	}
+</script>
+<script>
+
+</script>
+<script>
+
+	function loadImages() {
+		images.forEach((x, i) => setTimeout(loadXHR(x, imageLoaded), i * 10));
+	}
+
+	//	loadImages();
+</script>
+<script>
+	function loadZip() {
+		const req = new XMLHttpRequest();
+		req.open('GET', '/video.zip', true);
+		req.responseType = 'blob';
+		req.onload = function () {
+			var new_zip = new JSZip();
+			// more files !
+			new_zip.loadAsync(req.response)
+			.then(function (zip) {
+				parseImages(zip);
+				// you now have every files contained in the loaded zip
+				//				    new_zip.file("hello.txt").async("string"); // a promise of "Hello World\n"
+			});
+		};
+		req.send();
+	}
+
+	function parseImages(zip) {
+		var genUrl = (URL || webkitURL).createObjectURL;
+		var loaded = 0;
+		var len = _.size(zip.files) - 1;
+		console.log(len);
+		for (var name in zip.files) {
+
+			if (name !== 'video/') {
+				var index = name.match(/\d+/)[0] - 0 - 1;
+				//                const res = await i.async('blob');
+				var file = zip.files[name];
+				((i) => file.async('blob').then(res => {
+					loaded++;
+					console.log(i);
+					urls[i] = genUrl(res);
+					if (loaded >= len) {
+						console.log(urls);
+						draw();
+					}
+				}))(index);
+			}
+		}
+	}
+	loadZip();
+</script>
+</html>

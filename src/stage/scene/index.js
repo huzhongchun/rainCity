@@ -4,19 +4,17 @@ import { addDrops } from './drops';
 import { bindEvents } from '../binding';
 import { BASE_Z } from './common';
 import { RAF } from '../../utils/RAF';
-import {Controller} from './Controller';
-
+import { Controller } from './Controller';
 
 export function initScene() {
-	setTimeout(function () {
-		document.getElementById('loading-text').style.opacity = '0';
-	}, 1000);
+	document.getElementById('loading-text').style.opacity = '0';
 	setTimeout(function () {
 		document.getElementById('loading-text').style.display = 'none';
 		initStage();
-	}, 2000);
+	}, 1000);
 }
-function initStage(){
+
+function initStage() {
 	const stage = new C3D.Stage();
 	stage.size(window.innerWidth, window.innerHeight).update();
 
@@ -42,5 +40,7 @@ function initStage(){
 		ev.preventDefault();
 		controller.onTouchEnd.call(controller, ev);
 	});
-	controller.init(skyBox,drops);
+	setTimeout(function () {
+		controller.init(skyBox, drops);
+	}, 0);
 }

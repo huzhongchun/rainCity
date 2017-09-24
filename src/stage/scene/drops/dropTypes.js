@@ -205,6 +205,7 @@ export const rainDrops = [
     {
         file: 'touming',//透明
         user: '我',
+        last: true,
         position: '',
         time: '',
         content: ''

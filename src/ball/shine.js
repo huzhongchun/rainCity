@@ -38,7 +38,7 @@ export function shine(x0,y0,cb){
             }
         }
 
-        console.log('!');
+        //console.log('!');
         requestAnimationFrame(animate);
     }
 

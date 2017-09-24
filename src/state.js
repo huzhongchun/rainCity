@@ -2,6 +2,8 @@ const state = {
 	touching : false,
 	audioContext: null,
 	paused: true,
+	haveOpening:false,
+	current: 0,
 };
 const wrap = {
 	inner: state

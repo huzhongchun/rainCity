@@ -3,8 +3,8 @@ import { loadCss } from '../utils/loadCss';
 import { loadVideoFunc } from './video';
 import { loadingFunc } from './progress';
 import { loadImagesFunc } from './loadImages';
-import { bodyStr } from './body';
-
+import { bodyStr ,svg} from './body';
+import {playBGM} from '../bgm';
 //var loading = _.throttle(loadingFunc, 100);
 
 function requestImage(url, cb) {
@@ -17,17 +17,18 @@ function requestImage(url, cb) {
 	}, 0);
 }
 
-function preloadLoadingPageImages(loadImages) {
+function preloadLoadingPageImages(next) {
 	const len = 2;
 	let loaded = 0;
 	const cb = function () {
 		loaded++;
 		if (loaded >= len) {
-			setTimeout(function () {
+			//setTimeout(function () {
 				//document.body.className += ' show';
 				//document.body.style.opacity = '1';
-				loadImages();
-			}, 1000);
+				next && next();
+				//alert('loaded');
+			//}, 1000);
 		}
 	};
 	imageBlob('/images/loading/mask.png', cb);
@@ -36,13 +37,21 @@ function preloadLoadingPageImages(loadImages) {
 
 export function initLoading() {
 	//document.body.style.opacity = '0';
-	document.body.className = 'loading-body';
-	$('#root').html(bodyStr);
-	const loading = loadingFunc();
-	const loadVideo = loadVideoFunc(loading);
-	const loadImages = loadImagesFunc(loading, loadVideo);
-	loadImages();
-	//preloadLoadingPageImages(loadImages);
+	preloadLoadingPageImages(function(){
+		document.body.className = 'loading-body';
+		$('#root').html(bodyStr);
+        $('#root .mask').css('background-image',`url(${imageURL('/images/loading/mask.png')})`);
+		const loading = loadingFunc();
+		const loadVideo = loadVideoFunc(loading);
+		const loadImages = loadImagesFunc(loading, loadVideo);
+		loadImages();
+		setTimeout(function(){
+			$('#root .wrap-box').append(svg);
+		},300);
+		playBGM();
+	});
+
+
 
 	//loadCss('/css/loading.css',function(){
 	//});

@@ -1,6 +1,8 @@
 import { bodyStr } from './body';
-import {shine} from './shine';
-import {loadCss} from '../utils/loadCss';
+import { shine } from './shine';
+import { loadCss } from '../utils/loadCss';
+import { playBGM } from '../bgm';
+
 const BALL_SIZE = 370, HALF_SIZE = BALL_SIZE / 2;
 const INNER_SIZE = 280, HALF_INNER_SIZE = INNER_SIZE / 2;
 
@@ -9,6 +11,7 @@ export function initBall() {
 	$('#root').html(bodyStr);
 	//loadCss('/css/ball.css',init);
 	init();
+	playBGM();
 }
 
 function per(x) {
@@ -43,10 +46,10 @@ function init() {
 		allowMoving = false;
 		ev && ev.preventDefault();
 		touching = true;
-        $('#rain_foreground').removeClass('ready');
-        var x = ball.offset().left + HALF_SIZE, y = ball.offset().top + HALF_SIZE;
-		shine(x,y,function(){
-            $(window).trigger('stage_show');
+		$('#rain_foreground').removeClass('ready');
+		var x = ball.offset().left + HALF_SIZE, y = ball.offset().top + HALF_SIZE;
+		shine(x, y, function () {
+			$(window).trigger('stage_show');
 		});
 		// $('.cell').addClass('light');
 		foreground.addClass('light');
@@ -56,7 +59,7 @@ function init() {
 		// },1500);
 		// setTimeout(function () {
 		// 	$(window).trigger('stage_show');
-        //
+		//
 		// }, 4000);
 	};
 	ball.on('touchstart', ballTouch);
@@ -76,7 +79,9 @@ function init() {
 	});
 	let _lon, _lat, _b, dlon = 0, dlat = 0, db = 0;
 	let inited = false;
+	//const log = createLogger();
 	const func = function (t) {
+		if (!allowMoving) {return;}
 		if (!inited) {
 			_lon = t.lon;
 			_lat = t.lat;
@@ -87,19 +92,41 @@ function init() {
 			dlat = t.lat - _lat;
 			db = t.b - _b;
 		}
-		if (!allowMoving) {return;}
 		const left_p = Math.sin(Math.PI * dlon / 180), top_p = Math.pow((dlat + 90) / 180, 0.3) - 1;
 		// const t_left = -left_p * HALF_INNER_SIZE - HALF_INNER_SIZE + 'px',
 		//       t_top  = top_p * HALF_INNER_SIZE - HALF_INNER_SIZE + 'px';
 		//ballsMaterial.css('transform', `translate(${t_left},${t_top})`);
-		ball.css('transform', `translate(${(-HALF_SIZE + left_p * 80)}px,${(-HALF_SIZE + (db / 90) * 80 )}px)`);
+		const style = `translate(${(-HALF_SIZE + left_p * 80)}px,${(-HALF_SIZE + ((Math.sin( db * Math.PI / 180))) * 80 )}px)`;
+		ball.css('transform', style);
+		//log(style);
 		//innerBall.css('box-shadow', '' + (left_p - 0.5) * 10 + 'px ' + (top_p - 0.5) * 10 + 'px 70px 30px rgba(249, 238, 102,1);');
 	};
 	const g = new Orienter({
-		onOrient: func
+		onOrient: _.throttle(func, 16)
 	});
 	g.init();
 	setTimeout(function () {
 		allowMoving = true;
-	}, 2000);
+	}, 0);
+}
+
+function createLogger() {
+	let wrap;
+	return function (str) {
+		if (!wrap) {
+			wrap = document.createElement('div');
+			wrap.style.display = 'block';
+			wrap.style.position = 'fixed';
+			wrap.style.zIndex = '100000';
+			wrap.style.top = 0;
+			wrap.style.right = 0;
+			wrap.style.backgroundColor = 'rgba(0,0,0,.7)';
+			wrap.style.width = '100vw';
+			wrap.style.padding = '40px';
+			wrap.style.color = '#fff';
+			wrap.style.fontSize = '16px';
+			document.body.appendChild(wrap);
+		}
+		wrap.innerHTML = str;
+	};
 }

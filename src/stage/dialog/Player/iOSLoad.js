@@ -1,20 +1,20 @@
 import { getState } from '../../../state';
 import { Visualizer } from '../Visualizer';
-
+const isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 const touchingCls = 'm-btn-touching';
 
 let source,audioBuffer;
 
 export function iOSLoad(btn, src) {
 	const $btn = $(btn);
-	$btn.css('display', 'none');
+	//$btn.css('display', 'none');
 	getState().audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 	const xhr = new XMLHttpRequest();
 	xhr.open('GET', src, true);
 	xhr.responseType = 'arraybuffer';
 	xhr.onload = function () {
 		const responseBuffer = xhr.response;
-		$btn.css('display', 'block');
+		//$btn.css('display', 'block');
 		getState().audioCtx.decodeAudioData(responseBuffer, function (buffer) {
 			afterLoad(buffer, $btn);
 		});
@@ -38,8 +38,12 @@ function firstPlay(buffer) {
 }
 
 function afterLoad(buffer, $btn) {
-	firstPlay(buffer);
-	$btn.toggleClass('m-pause-btn');
+	auto(function(){
+        firstPlay(buffer);
+        $btn.toggleClass('m-pause-btn');
+        $btn.removeClass('loading');
+	});
+
 	const ontouchstart = ($btn, btn) => (ev) => {
 
 		ev.preventDefault();
@@ -86,4 +90,19 @@ export function clearContext() {
 	//	getState().audioCtx = null;
 	//	audioBuffer = null;
 	//});
+}
+
+function auto(func){
+    if (window.WeixinJSBridge) {
+        WeixinJSBridge.invoke('getNetworkType', {}, function (e) {
+            func();
+        }, false);
+        document.addEventListener('WeixinJSBridgeReady', function () {
+            WeixinJSBridge.invoke('getNetworkType', {}, function (e) {
+                func();
+            });
+        }, false);
+    } else {
+        func();
+    }
 }

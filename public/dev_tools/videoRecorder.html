@@ -1,0 +1,71 @@
+<html>
+<head>
+    <script>
+			document.addEventListener('DOMContentLoaded', function () {
+				var v = document.getElementById('v');
+				var canvas = document.getElementById('c');
+				var context = canvas.getContext('2d');
+				var back = document.createElement('canvas');
+				var backcontext = back.getContext('2d');
+
+				var cw, ch;
+
+				v.addEventListener('play', function () {
+					v.playbackRate = 0.1;
+					cw = v.clientWidth;
+					ch = v.clientHeight;
+					canvas.width = cw;
+					canvas.height = ch;
+					back.width = cw;
+					back.height = ch;
+					draw(v, context, backcontext, cw, ch);
+				}, false);
+
+			}, false);
+
+
+    </script>
+</head>
+<body>
+
+<!--<canvas width="640" id="c1" height="1008"></canvas>-->
+<canvas width="640" id="c" height="1008"></canvas>
+<video src="../media/v.mp4" id="v" width="640" height="1008" preload autoplay></video>
+
+<script src="../lib/zepto.min.js"></script>
+
+</body>
+<script src="../lib/base64.js"></script>
+<script src="../lib/FileSaver.js"></script>
+<script src="../lib/jszip.min.js"></script>
+<script>
+	var zip = new JSZip();
+	var imgFolder = zip.folder('frames');
+	var frame = 0;
+
+	function draw(v, c, bc, w, h) {
+		frame++;
+		console.log(frame,v.currentTime);
+		if (v.ended) {
+			debugger;
+			zip.generateAsync({ type: 'blob' })
+			.then(function (content) {
+				// see FileSaver.js
+				saveAs(content, 'video.zip');
+			});
+			return;
+		}
+		// First, draw it into the backing canvas
+		bc.drawImage(v, 0, 0, w, h);
+		// Grab the pixel data from the backing canvas
+		var idata = bc.getImageData(0, 0, w, h);
+		// Draw the pixels onto the visible canvas
+		c.putImageData(idata, 0, 0);
+		var content = c.canvas.toDataURL();
+		var startIndex = content.indexOf('base64,');
+		imgFolder.file(frame + '.png', content.slice(startIndex + 7), { base64: true });
+		// Start over!
+		setTimeout(draw, (41.66)*10, v, c, bc, w, h);
+	}
+</script>
+</html>
