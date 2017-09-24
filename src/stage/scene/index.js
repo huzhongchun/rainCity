@@ -5,42 +5,48 @@ import { bindEvents } from '../binding';
 import { BASE_Z } from './common';
 import { RAF } from '../../utils/RAF';
 import { Controller } from './Controller';
+import {getHash} from '../../hash';
+import {showDialog} from '../dialog';
 
 export function initScene() {
-	document.getElementById('loading-text').style.opacity = '0';
-	setTimeout(function () {
-		document.getElementById('loading-text').style.display = 'none';
-		initStage();
-	}, 1000);
+    document.getElementById('loading-text').style.opacity = '0';
+    setTimeout(function () {
+        document.getElementById('loading-text').style.display = 'none';
+        initStage();
+    }, 1000);
 }
 
 function initStage() {
-	const stage = new C3D.Stage();
-	stage.size(window.innerWidth, window.innerHeight).update();
+    const stage = new C3D.Stage();
+    stage.size(window.innerWidth, window.innerHeight).update();
 
-	const controller = new Controller();
-	const skyBox = createSkyBox();
-	const drops = addDrops(skyBox);
+    const controller = new Controller();
+    const skyBox = createSkyBox();
+    const drops = addDrops(skyBox);
 
-	skyBox.position(0, 0, 0).updateT();
-	drops.position(0, 0, 0).updateT();
-	stage.addChild(skyBox);
-	stage.addChild(drops);
-	bindEvents(stage);
+    skyBox.position(0, 0, 0).updateT();
+    drops.position(0, 0, 0).updateT();
+    stage.addChild(skyBox);
+    stage.addChild(drops);
+    bindEvents(stage);
 
-	drops.on('touchstart', function (ev) {
-		ev.preventDefault();
-		controller.onTouchStart.call(controller, ev);
-	}, true);
-	drops.on('touchmove', function (ev) {
-		ev.preventDefault();
-		controller.onTouchMove.call(controller, ev);
-	});
-	drops.on('touchend', function (ev) {
-		ev.preventDefault();
-		controller.onTouchEnd.call(controller, ev);
-	});
-	setTimeout(function () {
-		controller.init(skyBox, drops);
-	}, 0);
+    drops.on('touchstart', function (ev) {
+        ev.preventDefault();
+        controller.onTouchStart.call(controller, ev);
+    }, true);
+    drops.on('touchmove', function (ev) {
+        ev.preventDefault();
+        controller.onTouchMove.call(controller, ev);
+    });
+    drops.on('touchend', function (ev) {
+        ev.preventDefault();
+        controller.onTouchEnd.call(controller, ev);
+    });
+    setTimeout(function () {
+        controller.init(skyBox, drops);
+        const {current,query} = getHash();
+        if(current == 4 && query != -1) {
+            showDialog(Number(query),skyBox);
+        }
+    }, 0);
 }

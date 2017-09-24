@@ -3,12 +3,15 @@ import { initBall } from './ball';
 import { initLoading } from './loading';
 import { initRain } from './rain';
 import { getState } from './state';
+import { getHash } from './hash';
 import './style/main.less';
+
 if (process.env.NODE_ENV != 'development') {
-    if(window.location.hash != "#4"){
+    if (getHash().current !== 4) {
         window.location.hash = '#';
     }
 }
+
 const pathname = window.location.pathname;
 
 $(window).on('stage_show', function () {
@@ -58,14 +61,15 @@ if (process.env.NODE_ENV == 'development') {
     //	initRain();
     //}
 } else {
-    const { hash } = window.location;
-    if (hash == '#1') {
+    const current = getHash().current;
+    if (current == '1') {
         initLoading();
-    }else if( hash== "#4") {
-        getState().current =4;
+    } else if (current == '4') {
+        getState().current = 4;
         initStage();
     }
-    else {	initRain();
+    else {
+        initRain();
     }
 }
 var old_hash = window.location.hash + '';
@@ -77,7 +81,7 @@ setInterval(function () {
 }, 100);
 
 window.onhashchange = function () {
-    const [foo, hash = '0'] = window.location.hash.split('#');
+    const hash = getHash().current;
     const current = getState().current;
     if (hash == current) return;
     if (current != 4) return;
