@@ -52,13 +52,21 @@ body.ball-body {
   margin: 0;
   height: 100vh;
   width: 100vw;
-  background-color: #000;
+  //background-color: #000;
   .bg('/images/ball/ball_bg.jpg');
   background-size: 750px auto;
   background-position: top center;
   background-repeat: no-repeat;
   overflow: hidden;
   transition: opacity ease 3s;
+  #root {
+      height: 100vh;
+      width: 100vw;
+        .bg('/images/ball/ball_bg.jpg');
+      background-size: 750px auto;
+      background-position: top center;
+      background-repeat: no-repeat;
+    }
   &::before {
     display: block;
     color: @color_1;

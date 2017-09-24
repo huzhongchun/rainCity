@@ -46,6 +46,7 @@ export function initLoading() {
 		const loadImages = loadImagesFunc(loading, loadVideo);
 		loadImages();
 		setTimeout(function(){
+            $('body').addClass('hide-bg');
 			$('#root .wrap-box').append(svg);
 		},300);
 		playBGM();
