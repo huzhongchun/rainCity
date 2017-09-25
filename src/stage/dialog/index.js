@@ -92,7 +92,7 @@ export const showDialog = (function () {
                     desc: '一座凭空建造的雨中城市，居然被百度地图收录了',
                     timeLineTitle: '雨中城，一座永远下雨的城市',
                     imgUrl:process.env.CDN_PREFIX+'/images/share_img.jpg',
-                    link: location.href
+                    link: 'http://h5.thefair.net.cn/collection/rain/city'
                 });
 			}
 		});
@@ -135,11 +135,11 @@ export const showDialog = (function () {
 		});
 		el.addClass('show');
         setWxShareOpt({
-            title: '我分享了一段来自'+data.position+'的雨声给你，不来听听吗？',
+            title: '我在雨声博物馆找到了'+data.position+'的雨声，你想听哪里的雨声？',
             desc: '我找了30个国家和省市的人，录了雨声送给你。',
-            timeLineTitle: '我分享了一段来自'+data.position+'的雨声给你，不来听听吗？',
+            timeLineTitle: '我在雨声博物馆找到了'+data.position+'的雨声，你想听哪里的雨声？',
             imgUrl:process.env.CDN_PREFIX+'/images/share_img.jpg',
-            link: 'http://h5.thefair.net.cn/collection/rain/city#4'+(i+1)
+            link: 'http://h5.thefair.net.cn/collection/rain/city'
         });
 		const musicURL = `${process.env.CDN_PREFIX}/media/${rainDrops[i].file}.mp3`;
 		loadFunc(btn, musicURL);
